@@ -167,6 +167,7 @@ function M.panel()
         reminder_scan_upcoming = "Show reminders due within N hours",
         reminder_scan_all = "Show all reminders",
         reminder_edit = "Snooze/edit reminder on current line",
+        reminder_recent_done = "Recently completed reminders (48h)",
         line_history = "Git history for line under cursor",
     }
 

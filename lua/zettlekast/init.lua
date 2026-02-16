@@ -44,6 +44,7 @@ local commands = {
     "reminder_scan_upcoming",
     "reminder_scan_all",
     "reminder_edit",
+    "reminder_recent_done",
     "line_history",
 }
 
@@ -115,6 +116,10 @@ end
 
 function M.reminder_edit()
     require("zettlekast.reminders").edit()
+end
+
+function M.reminder_recent_done()
+    require("zettlekast.reminders").scan_recent_done()
 end
 
 function M.line_history()

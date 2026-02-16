@@ -46,6 +46,23 @@ function M.scan_all()
     })
 end
 
+--- Scan and show recently completed reminders
+function M.scan_recent_done(lookback_hours)
+    local cfg = require("zettlekast.config").get()
+    local paths = cfg.scan_dirs or { cfg.home }
+    lookback_hours = lookback_hours or (cfg.reminders and cfg.reminders.default_threshold_hours) or 48
+
+    scanner.scan_paths_recent_done(paths, lookback_hours)
+
+    local telescope_reminders = require("zettlekast.reminders.telescope")
+    telescope_reminders.reminder_picker({
+        paths = paths,
+        scan_type = "recent_done",
+        prompt_title = "Recently Done (" .. lookback_hours .. "h)",
+        threshold_hours = lookback_hours,
+    })
+end
+
 --- Edit/snooze the reminder on the current line
 function M.edit()
     local line = vim.api.nvim_get_current_line()
