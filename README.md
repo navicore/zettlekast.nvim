@@ -178,25 +178,26 @@ Supported time expressions:
 
 ## Tmux Integration
 
-Three scripts in `scripts/` integrate with tmux:
+Three scripts in `scripts/` integrate with tmux. The paths below assume
+lazy.nvim — adjust if your plugin manager installs elsewhere.
 
-**Status bar reminder count** — add to `status-right` in `tmux.conf`:
-```bash
-#(~/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminders.sh ~/git/navicore/zet)
+**Status bar reminder count** — reference in `status-right`:
+```
+#($HOME/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminders.sh $HOME/git/$(whoami)/zet)
 ```
 
 **Popup keybindings:**
 ```tmux
-bind r run-shell '~/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminder-popup.sh'
-bind z run-shell '~/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-zett-popup.sh'
+bind r run-shell '$HOME/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminder-popup.sh'
+bind z run-shell '$HOME/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-zett-popup.sh'
 ```
 
 **Click support** for the status bar badges:
 ```tmux
 bind -Troot MouseDown1Status if -F '#{==:#{mouse_status_range},reminder}' \
-  'run-shell "~/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminder-popup.sh"' \
+  'run-shell "$HOME/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-reminder-popup.sh"' \
   'if -F "#{==:#{mouse_status_range},zett}" \
-    "run-shell ~/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-zett-popup.sh" \
+    "run-shell $HOME/.local/share/nvim/lazy/zettlekast.nvim/scripts/tmux-zett-popup.sh" \
     "select-window -t ="'
 ```
 
