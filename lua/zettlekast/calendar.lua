@@ -1,0 +1,98 @@
+local M = {}
+
+local config = require("zettlekast.config")
+local dates = require("zettlekast.dates")
+local utils = require("zettlekast.utils")
+
+--- Open calendar-vim
+function M.show_calendar()
+    local cfg = config.get()
+
+    -- Set calendar-vim options
+    if cfg.calendar_opts then
+        if cfg.calendar_opts.weeknm then
+            vim.g.calendar_weeknm = cfg.calendar_opts.weeknm
+        end
+        if cfg.calendar_opts.calendar_monday then
+            vim.g.calendar_monday = cfg.calendar_opts.calendar_monday
+        end
+        if cfg.calendar_opts.calendar_mark then
+            vim.g.calendar_mark = cfg.calendar_opts.calendar_mark
+        end
+    end
+
+    vim.cmd("Calendar")
+end
+
+--- Calendar action callback: when a date is clicked, open/create that day's note
+function M.calendar_action(day, month, year, week, dir)
+    local cfg = config.get()
+    local date_str = string.format("%04d-%02d-%02d", year, month, day)
+    local filepath = cfg.home .. "/" .. date_str .. cfg.extension
+
+    if utils.file_exists(filepath) then
+        vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+    elseif cfg.dailies_create_nonexisting then
+        local time = os.time({ year = year, month = month, day = day })
+        local vars = dates.template_vars(time)
+        vars.title = date_str
+
+        local template_path = cfg.template_new_daily
+        local templates = require("zettlekast.templates")
+        local lines = templates.apply(template_path, vars)
+        if lines then
+            utils.write_lines(filepath, lines)
+        else
+            utils.write_lines(filepath, {
+                "---",
+                "title: " .. date_str,
+                "date: " .. date_str,
+                "---",
+                "",
+            })
+        end
+        vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+    end
+end
+
+--- Calendar sign callback: mark days that have notes
+function M.calendar_sign(day, month, year)
+    local cfg = config.get()
+    local date_str = string.format("%04d-%02d-%02d", year, month, day)
+    local filepath = cfg.home .. "/" .. date_str .. cfg.extension
+
+    if utils.file_exists(filepath) then
+        return 1
+    end
+    return 0
+end
+
+--- Setup calendar-vim integration
+function M.setup()
+    local cfg = config.get()
+    if not cfg.plug_into_calendar then
+        return
+    end
+
+    -- Set the calendar action and sign callbacks
+    vim.g.calendar_action = "zettlekast#calendar_action"
+    vim.g.calendar_sign = "zettlekast#calendar_sign"
+
+    -- Create VimScript bridge functions
+    vim.cmd([[
+        function! zettlekast#calendar_action(day, month, year, week, dir)
+            lua require("zettlekast.calendar").calendar_action(
+                \ vim.fn.str2nr(a:day),
+                \ vim.fn.str2nr(a:month),
+                \ vim.fn.str2nr(a:year),
+                \ a:week, a:dir)
+        endfunction
+
+        function! zettlekast#calendar_sign(day, month, year)
+            return luaeval('require("zettlekast.calendar").calendar_sign(_A[1], _A[2], _A[3])',
+                \ [a:day, a:month, a:year])
+        endfunction
+    ]])
+end
+
+return M
