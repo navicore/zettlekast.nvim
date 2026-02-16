@@ -44,6 +44,7 @@ local commands = {
     "reminder_scan_upcoming",
     "reminder_scan_all",
     "reminder_edit",
+    "line_history",
 }
 
 function M.command_list()
@@ -114,6 +115,10 @@ end
 
 function M.reminder_edit()
     require("zettlekast.reminders").edit()
+end
+
+function M.line_history()
+    require("zettlekast.history").line_history()
 end
 
 return M
