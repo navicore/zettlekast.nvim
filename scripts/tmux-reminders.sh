@@ -15,7 +15,7 @@
 if [[ "$(uname)" == "Darwin" ]]; then
     _ps=$(pmset -g powerstate IOPMrootDomain 2>/dev/null | awk '/IOPMrootDomain/{print $3}')
     if [[ "$_ps" =~ ^[01]$ ]]; then
-        echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|zett] Zett #[norange]"
+        echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|zett] Zet #[norange]"
         exit 0
     fi
 fi
@@ -67,10 +67,10 @@ for dir in "$@"; do
 done
 
 # Output for tmux with click support
-# "Zett" is always shown (range=user|zett) - opens Zet goto_today
+# "Zet" is always shown (range=user|zett) - opens Zet goto_today
 # When reminders are due, a red count badge (range=user|reminder) is also shown
 if [[ "$count" -gt 0 ]]; then
-    echo "#[fg=#131a24,bg=#f7768e,bold]#[range=user|reminder] ${count} #[norange]#[fg=#f7768e,bg=#131a24,bold]#[range=user|zett] Zett #[norange]"
+    echo "#[fg=#131a24,bg=#f7768e,bold]#[range=user|reminder] ${count} #[norange]#[fg=#f7768e,bg=#131a24,bold]#[range=user|zett] Zet #[norange]"
 else
-    echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|zett] Zett #[norange]"
+    echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|zett] Zet #[norange]"
 fi
