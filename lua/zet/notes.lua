@@ -138,6 +138,8 @@ function M.goto_today()
 
     if utils.file_exists(filepath) then
         vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+        -- Position cursor below the template header
+        vim.cmd("normal! G")
         return filepath
     end
 
@@ -154,6 +156,10 @@ function M.goto_today()
 
     local lines = templates.apply(template_path, vars)
     if lines then
+        -- Ensure trailing blank line so cursor lands on an empty line
+        if #lines == 0 or lines[#lines] ~= "" then
+            table.insert(lines, "")
+        end
         utils.write_lines(filepath, lines)
     else
         utils.write_lines(filepath, {
@@ -166,6 +172,8 @@ function M.goto_today()
     end
 
     vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+    -- Position cursor below the template header
+    vim.cmd("normal! G")
     return filepath
 end
 
