@@ -43,8 +43,6 @@ M.defaults = {
 
     contacts = {
         dir = "contacts",
-        default_import_path = "~/Desktop/All contacts.vcf",
-        default_export_path = "~/Desktop/contacts-export.vcf",
     },
 }
 

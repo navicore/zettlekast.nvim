@@ -10,21 +10,8 @@ function M.contacts_dir()
     return cfg.home .. "/" .. dir_name
 end
 
---- Import contacts from a VCF file
-function M.import(vcf_path)
-    local cfg = config.get()
-
-    -- Resolve path
-    if not vcf_path or vcf_path == "" then
-        vcf_path = cfg.contacts and cfg.contacts.default_import_path
-            or "~/Desktop/All contacts.vcf"
-    end
-    vcf_path = vim.fn.expand(vcf_path)
-
-    if vim.fn.filereadable(vcf_path) ~= 1 then
-        vim.notify("VCF file not found: " .. vcf_path, vim.log.levels.ERROR)
-        return
-    end
+--- Run the actual import after path is resolved
+local function do_import(vcf_path)
 
     local parser = require("zet.contacts.vcf_parser")
     local dedup = require("zet.contacts.dedup")
@@ -80,6 +67,32 @@ function M.import(vcf_path)
     )
 end
 
+--- Import contacts from a VCF file. Prompts with file picker if no path given.
+function M.import(vcf_path)
+    if vcf_path and vcf_path ~= "" then
+        local expanded = vim.fn.expand(vcf_path)
+        if vim.fn.filereadable(expanded) ~= 1 then
+            vim.notify("VCF file not found: " .. expanded, vim.log.levels.ERROR)
+            return
+        end
+        do_import(expanded)
+        return
+    end
+
+    -- No path given — prompt with file completion
+    vim.ui.input({ prompt = "VCF file path: ", completion = "file" }, function(input)
+        if not input or input == "" then
+            return
+        end
+        local expanded = vim.fn.expand(input)
+        if vim.fn.filereadable(expanded) ~= 1 then
+            vim.notify("VCF file not found: " .. expanded, vim.log.levels.ERROR)
+            return
+        end
+        do_import(expanded)
+    end)
+end
+
 --- Launch Telescope contact picker
 function M.find()
     require("zet.contacts.telescope").contacts_picker()
@@ -90,16 +103,8 @@ function M.dedup_interactive()
     require("zet.contacts.dedup").interactive()
 end
 
---- Export all contacts to a VCF file
-function M.export(output_path)
-    local cfg = config.get()
-
-    if not output_path or output_path == "" then
-        output_path = cfg.contacts and cfg.contacts.default_export_path
-            or "~/Desktop/contacts-export.vcf"
-    end
-    output_path = vim.fn.expand(output_path)
-
+--- Run the actual export after path is resolved
+local function do_export(output_path)
     local markdown = require("zet.contacts.markdown")
     local writer = require("zet.contacts.vcf_writer")
 
@@ -116,6 +121,21 @@ function M.export(output_path)
         string.format("Exported %d contacts to %s", #contacts, output_path),
         vim.log.levels.INFO
     )
+end
+
+--- Export all contacts to a VCF file. Prompts for path if not given.
+function M.export(output_path)
+    if output_path and output_path ~= "" then
+        do_export(vim.fn.expand(output_path))
+        return
+    end
+
+    vim.ui.input({ prompt = "Export VCF to: ", completion = "file" }, function(input)
+        if not input or input == "" then
+            return
+        end
+        do_export(vim.fn.expand(input))
+    end)
 end
 
 return M
