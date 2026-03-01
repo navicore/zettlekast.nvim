@@ -1,8 +1,13 @@
 # zet.nvim
 
-A focused Zettelkasten note-taking plugin for Neovim with integrated reminder
-management. Built on Telescope and designed to work with existing markdown note
-collections without migration.
+A focused Zettelkasten note-taking plugin for Neovim with integrated reminders
+and contact management. Built on Telescope and designed to work with existing
+markdown note collections without migration.
+
+Everything lives in your zet directory as plain markdown: notes, daily journals,
+reminders, and contacts. Contacts are imported from VCF files and stored as
+markdown with YAML frontmatter, making them linkable from any note via
+`[[Contact Name]]`.
 
 > **Note:** This is my personal fork/rewrite combining the features I actually
 > use from [telekasten.nvim](https://github.com/renerocksai/telekasten.nvim)
@@ -10,8 +15,7 @@ collections without migration.
 > You're welcome to use it, but if you want a full-featured, well-supported
 > Zettelkasten plugin, **telekasten.nvim is probably what you want**. This repo
 > exists because I only use ~12 of telekasten's many features and wanted a
-> smaller codebase I can extend (image handling, etc.) without carrying the
-> rest.
+> smaller codebase I can extend without carrying the rest.
 
 ## Requirements
 
@@ -87,6 +91,11 @@ require("zet").setup({
         show_virtual_text = true,       -- show countdown extmarks
         default_threshold_hours = 48,   -- for upcoming reminder scans
     },
+
+    -- Contacts
+    contacts = {
+        dir = "contacts",              -- subdirectory under home
+    },
 })
 ```
 
@@ -129,6 +138,12 @@ All accessible via `:Zet <subcommand>` with tab completion.
 | `reminder_scan_upcoming` | Show reminders due within N hours |
 | `reminder_scan_all` | Show all reminders |
 | `reminder_edit` | Snooze/edit reminder on current line |
+| `reminder_recent_done` | Recently completed reminders |
+| `line_history` | Git history for line under cursor |
+| `contacts_import` | Import contacts from a VCF file |
+| `contacts_find` | Browse/search contacts via Telescope |
+| `contacts_dedup` | Find and merge duplicate contacts |
+| `contacts_export` | Export contacts to a VCF file |
 
 Legacy aliases: `:ReminderScan`, `:ReminderScanUpcoming`, `:ReminderScanAll`, `:ReminderEdit`
 
@@ -150,6 +165,7 @@ vim.keymap.set("n", "<leader>zr", zk.reminder_scan, { desc = "Due reminders" })
 vim.keymap.set("n", "<leader>zR", zk.reminder_scan_all, { desc = "All reminders" })
 vim.keymap.set("n", "<leader>ze", zk.reminder_edit, { desc = "Snooze reminder" })
 vim.keymap.set("n", "<leader>zp", zk.panel, { desc = "Command palette" })
+vim.keymap.set("n", "<leader>zC", zk.contacts_find, { desc = "Find contacts" })
 ```
 
 ## Reminders
@@ -175,6 +191,57 @@ Supported time expressions:
 - `next Monday`, `on Tuesday at 3pm`
 - `Feb 14 at 6pm`, `December 25, 2025`
 - `2/20/26 9am`
+
+## Contacts
+
+Import contacts from a VCF 3.0 file (e.g., exported from Fastmail, Google, or
+Apple Contacts) and store them as markdown notes in your zet directory:
+
+```vim
+:Zet contacts_import ~/Desktop/contacts.vcf
+```
+
+If no path is given, you'll be prompted with file completion. The import
+parses the VCF, filters entries with no name, merges exact duplicates, and
+writes one markdown file per contact into `{home}/contacts/`.
+
+Each contact is a standard markdown file with YAML frontmatter:
+
+```markdown
+---
+title: Ed Sweeney
+date: 2026-03-01
+type: contact
+emails:
+  - ed@onextent.com
+org: Falkonry
+phones:
+  - "650-555-1234"
+urls: []
+addresses: []
+---
+
+#contact
+
+## Notes
+
+Category: Network
+```
+
+Because contacts are markdown files in the vault, `[[Ed Sweeney]]` from any
+note resolves to the contact file.
+
+**Browse contacts** with `:Zet contacts_find` — a Telescope picker showing
+name, email, and org. Type to filter, `<CR>` to open.
+
+**Deduplicate** with `:Zet contacts_dedup` — finds clusters by normalized
+name (strips "via LinkedIn", parentheticals) or shared email, then lets you
+merge them interactively.
+
+**Export** back to VCF with `:Zet contacts_export ~/Desktop/out.vcf`.
+
+A `contact.md` template is available for creating contacts manually via
+`:Zet new_templated_note`.
 
 ## Tmux Integration
 
