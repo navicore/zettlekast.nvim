@@ -41,6 +41,10 @@ M.defaults = {
         default_threshold_hours = 48,
     },
 
+    projects = {
+        enabled = true,
+    },
+
     contacts = {
         dir = "contacts",
     },

@@ -36,6 +36,12 @@ lua/zet/
     autocmds.lua     — BufWritePre: auto-convert natural language times on save
     telescope.lua    — Telescope picker for reminder results
 
+  projects/
+    init.lua         — Project subsystem entry point (scan, scan_all, setup)
+    autocmds.lua     — BufWritePre: auto-format #project lines to checkbox markdown
+    scanner.lua      — Walks vault files, parses #project lines, filters open/all
+    telescope.lua    — Telescope picker for project results
+
   contacts/
     init.lua         — Contact subsystem entry point (import, find, dedup, export)
     vcf_parser.lua   — VCF 3.0 parser (handles folded lines, quoted-printable, etc.)
@@ -56,6 +62,8 @@ lua/zet/
 - `scripts/tmux-reminders.sh` — Counts due reminders for tmux status bar
 - `scripts/tmux-reminder-popup.sh` — Opens reminder scan in a tmux popup
 - `scripts/tmux-zett-popup.sh` — Opens zet note finder in a tmux popup
+- `scripts/tmux-projects.sh` — Counts open projects for tmux status bar
+- `scripts/tmux-project-popup.sh` — Opens project scan in a tmux popup
 - `scripts/minimal_init.vim` — Minimal Neovim config for running tests
 
 ## Data Flow
@@ -64,7 +72,8 @@ lua/zet/
 2. **Notes**: All notes are plain `.md` files in `config.home` (and `archive_dirs`). Filenames are generated from UUID + title patterns. Templates use `{{variable}}` substitution.
 3. **Links**: `[[Name]]` links resolve to files by scanning vault filenames. Following a link opens or creates the target file.
 4. **Reminders**: On save, `time_parser` converts natural language (`in 2 hours`) to ISO 8601 in-place. Scanner walks all files for `#reminder` lines and filters by due date. Virtual text shows countdowns.
-5. **Contacts**: VCF import parses entries -> writes one `.md` per contact with YAML frontmatter. Dedup clusters by normalized name or shared email. Export reverses the process.
+5. **Projects**: On save, raw `#project <desc>` lines are rewritten to `* [ ] #project: <desc>`. Scanner walks all files for `#project` lines; default picker shows only unchecked (open) items.
+6. **Contacts**: VCF import parses entries -> writes one `.md` per contact with YAML frontmatter. Dedup clusters by normalized name or shared email. Export reverses the process.
 
 ## Tests
 

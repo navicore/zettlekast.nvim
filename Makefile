@@ -3,7 +3,7 @@
 PLENARY_DIR ?= $(shell nvim --headless -c 'echo stdpath("data") .. "/lazy/plenary.nvim"' -c 'quit' 2>&1 | tr -d '\n')
 
 test:
-	nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'scripts/minimal_init.vim'}"
+	nvim --headless --noplugin -u scripts/minimal_init.vim -c "PlenaryBustedDirectory tests/ {minimal_init = 'scripts/minimal_init.vim'}"
 
 test-time-parser:
 	nvim --headless -c "PlenaryBustedFile tests/time_parser_spec.lua"

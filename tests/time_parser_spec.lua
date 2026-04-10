@@ -85,15 +85,20 @@ end)
 
 describe("parse - today/tomorrow", function()
     it("should return ISO 8601 datetime string for 'tomorrow at 6am'", function()
-        local expected_local = "2023-10-15T06:00:00Z"
-        local expected_utc = to_utc(expected_local)
+        -- Build expected from actual tomorrow so DST offset is correct
+        local tomorrow = os.time() + 86400
+        local t = os.date("*t", tomorrow)
+        t.hour = 6; t.min = 0; t.sec = 0
+        local expected_utc = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time(t))
         local result = parse("tomorrow at 6am")
         local success, err = compare_time(expected_utc, result)
         assert.is_true(success, err)
     end)
     it("should return ISO 8601 datetime string for 'today at 6:30pm'", function()
-        local expected_local = "2023-10-14T18:30:00Z"
-        local expected_utc = to_utc(expected_local)
+        -- Build expected from actual today so DST offset is correct
+        local t = os.date("*t")
+        t.hour = 18; t.min = 30; t.sec = 0
+        local expected_utc = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time(t))
         local result = parse("today at 6:30pm")
         local success, err = compare_time(expected_utc, result)
         assert.is_true(success, err)
