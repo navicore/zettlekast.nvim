@@ -13,7 +13,6 @@
 if [[ "$(uname)" == "Darwin" ]]; then
     _ps=$(pmset -g powerstate IOPMrootDomain 2>/dev/null | awk '/IOPMrootDomain/{print $3}')
     if [[ "$_ps" =~ ^[01]$ ]]; then
-        echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|project] Proj #[norange]"
         exit 0
     fi
 fi
@@ -42,8 +41,7 @@ for dir in "$@"; do
 done
 
 # Output for tmux with click support
+# Show blue count badge only when there are open projects; nothing otherwise
 if [[ "$count" -gt 0 ]]; then
-    echo "#[fg=#131a24,bg=#9ece6a,bold]#[range=user|project] ${count} Proj #[norange]#[fg=#9ece6a,bg=#131a24,nobold]"
-else
-    echo "#[fg=#71839b,bg=#131a24,nobold]#[range=user|project] Proj #[norange]"
+    echo "#[fg=#131a24,bg=#719cd6,bold]#[range=user|project] ${count} #[norange]#[fg=#719cd6,bg=#131a24,nobold]"
 fi
