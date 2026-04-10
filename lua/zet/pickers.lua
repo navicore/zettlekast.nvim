@@ -168,6 +168,8 @@ function M.panel()
         reminder_scan_all = "Show all reminders",
         reminder_edit = "Snooze/edit reminder on current line",
         reminder_recent_done = "Recently completed reminders (48h)",
+        project_scan = "Show open projects",
+        project_scan_all = "Show all projects",
         line_history = "Git history for line under cursor",
         contacts_import = "Import contacts from VCF file",
         contacts_find = "Browse/search contacts",

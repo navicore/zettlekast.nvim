@@ -12,6 +12,9 @@ function M.setup(user_config)
     -- Setup reminder subsystem
     require("zet.reminders").setup()
 
+    -- Setup project subsystem
+    require("zet.projects").setup()
+
     -- Setup default keymaps
     if cfg.default_keymaps then
         local map = vim.keymap.set
@@ -23,6 +26,7 @@ function M.setup(user_config)
         map("n", "<leader>zc", "<cmd>Zet show_calendar<CR>", { desc = "Calendar" })
         map("n", "<leader>zr", "<cmd>Zet reminder_scan<CR>", { desc = "Due reminders" })
         map("n", "<leader>zre", "<cmd>Zet reminder_edit<CR>", { desc = "Snooze reminder" })
+        map("n", "<leader>zp", "<cmd>Zet project_scan<CR>", { desc = "Open projects" })
     end
 end
 
@@ -45,6 +49,8 @@ local commands = {
     "reminder_scan_all",
     "reminder_edit",
     "reminder_recent_done",
+    "project_scan",
+    "project_scan_all",
     "line_history",
     "contacts_import",
     "contacts_find",
@@ -124,6 +130,14 @@ end
 
 function M.reminder_recent_done()
     require("zet.reminders").scan_recent_done()
+end
+
+function M.project_scan()
+    require("zet.projects").scan()
+end
+
+function M.project_scan_all()
+    require("zet.projects").scan_all()
 end
 
 function M.line_history()
