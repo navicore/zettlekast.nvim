@@ -1,3 +1,8 @@
+<!-- ghmig:moved -->
+> **This repository has moved to [https://git.navicore.tech/navicore/zet.nvim](https://git.navicore.tech/navicore/zet.nvim).**
+>
+> The GitHub copy is archived and no longer maintained.
+
 # zet.nvim
 
 A focused Zettelkasten note-taking plugin for Neovim with integrated reminders
